@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  tx_pg_loader_job:
+    build:
+      context: .
+      dockerfile: docker/txPgLoaderJob/Dockerfile 
+    env_file:
+      - "docker/txPgLoaderJob/dev.env"
