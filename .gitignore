@@ -133,3 +133,4 @@ dist
 volumes/ipfs
 volumes/postgres
 volumes/servers.json
+volumes/pgadmin
