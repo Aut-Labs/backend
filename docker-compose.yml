@@ -1,9 +1,16 @@
 version: '3.8'
 
 services:
-  tx_pg_loader_job:
+  backend_api:
     build:
-      context: .
-      dockerfile: docker/txPgLoaderJob/Dockerfile 
+      context: services/backend_api
+      dockerfile: ./../../docker/backend_api/Dockerfile
     env_file:
-      - "docker/txPgLoaderJob/dev.env"
+      - ./docker/backend_api/dev.env
+    entrypoint: ["python", "app.py"]
+  # nginx:
+  #   build: ./services/nginx
+  #   ports:
+  #     - 1337:80
+  #   depends_on:
+  #     - web

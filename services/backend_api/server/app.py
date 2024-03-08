@@ -1,14 +1,17 @@
 from flask import Flask, request, make_response, jsonify
-from thirdweb.types import LoginPayload
-from thirdweb import ThirdwebSDK
 from datetime import datetime, timedelta
 import os
+from typing import Dict
+from web3 import Web3, Ethereum
 
 app = Flask(__name__)
 
+def read_that(request: dict[str, [str, [int, None]]]) -> [None, bytes]:
+
+
 @app.route("/login", methods=["POST"])
 def login():
-    private_key = os.environ.get("ADMIN_PRIVATE_KEY")
+    private_key = os.getenv("ADMIN_PRIVATE_KEY")
     if not private_key:
         print("Missing ADMIN_PRIVATE_KEY environment variable")
         return "Admin private key not set", 400

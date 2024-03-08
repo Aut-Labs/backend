@@ -134,3 +134,5 @@ volumes/ipfs
 volumes/postgres
 volumes/servers.json
 volumes/pgadmin
+
+services/backend_api/tini-amd64
