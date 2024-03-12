@@ -29,8 +29,6 @@ def process_token_issue_request():
     if not request.is_json:
          return jsonify(error="failed to parse json request body"), 400
 
-    # data = request.get_json()
-
     if not {'message', 'signature'}.issubset(request.json):
         return jsonify(error="request missing a required field"), 400
     message: dict = request.json['message']
@@ -119,7 +117,10 @@ def process_interaction_approve_request():
         return jsonify(error="signer address missmatch"), 403
     
     sql = f'''insert into public.interaction_approve(interaction_hash, eth_address, message_, signature_hex) 
-values('{interaction_id}', '{signer}', '{Web3.to_hex(text=json.dumps(message, separators=(",", ":")))}', '{signature}');'''
+values('{interaction_id}', '{signer}', '{Web3.to_hex(text=json.dumps(message, separators=(",", ":")))}', '{signature}')
+on conflict do update set
+message_ = EXCLUDED.message_,
+signature_hex = EXCLUDED.signature_hex;'''
 
     connection: pg_conn = get_db()
     connection.autocommit = True
