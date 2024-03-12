@@ -9,4 +9,3 @@ def get_db():
                                 #password=current_app.config['POSTGRES_PASSWORD'])
 
     return g.db
-
