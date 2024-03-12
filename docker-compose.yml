@@ -7,10 +7,7 @@ services:
       dockerfile: ./../../docker/backend_api/Dockerfile
     env_file:
       - ./docker/backend_api/dev.env
-    entrypoint: ["python", "app.py"]
-  # nginx:
-  #   build: ./services/nginx
-  #   ports:
-  #     - 1337:80
-  #   depends_on:
-  #     - web
+    ports:
+      - "5000:5000"
+    command: ["python", "-m", "app"]
+  
