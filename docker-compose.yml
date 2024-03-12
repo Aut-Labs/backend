@@ -1,5 +1,10 @@
 version: '3.8'
 
+networks:
+  backend:
+    name: backend
+    external: true
+
 services:
   backend_api:
     build:
@@ -7,7 +12,9 @@ services:
       dockerfile: ./../../docker/backend_api/Dockerfile
     env_file:
       - ./docker/backend_api/dev.env
+      - ./docker/postgres/dev.env
     ports:
       - "5000:5000"
     command: ["python", "-m", "app"]
-  
+    networks:
+      - backend

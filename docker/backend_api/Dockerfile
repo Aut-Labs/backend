@@ -25,9 +25,6 @@ COPY source/app /usr/src/app
 
 ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app:/usr/src"
 
-# ARG GIT_HASH
-# ENV GIT_HASH=${GIT_HASH:-dev}
-
 USER user
 
 ENTRYPOINT ["/usr/src/tini", "--"]

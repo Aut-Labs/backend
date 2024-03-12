@@ -5,12 +5,9 @@ readonly _host="localhost"
 readonly _version="v1"
 readonly _api_base_url="http://${_host}:${_port}/api/${_version}"
 
-function eth_address_from_pk {
+function _eth_address_from_pk {
     printf "$1" | python -c 'from eth_account import Account; print((Account.from_key(input())).address)'
 }
-
-readonly _private_key="$(openssl rand -hex 32)"
-readonly _eth_address="$(eth_address_from_pk "0x${_private_key}")"
 
 # readonly _der_file=ec.der
 # function pem_file_from_pk {
@@ -19,30 +16,55 @@ readonly _eth_address="$(eth_address_from_pk "0x${_private_key}")"
 # }
 # pem_file_from_pk $_private_key > $_der_file 2>/dev/null
 
-readonly _json_fmt='{"message":%s,"signature":"%s"}'
-readonly _message_fmt='{"timestamp":%s,"signer":"%s","domain":"%s"}'
-readonly _msg_text=$(printf $_message_fmt $(date +%s) "${_eth_address}" localhost:5000 | jq -c .)
-readonly _sig_text=$(python3 sign_message.py "${_msg_text}" "0x${_private_key}")
-readonly _json=$(printf $_json_fmt $_msg_text $_sig_text)
+function main {
+    local private_key="$(openssl rand -hex 32)"
+    local eth_address="$(_eth_address_from_pk "0x${private_key}")"
 
-echo ">> json body:"
-echo $_json | jq .
-if [[ $_eth_address == $(python3 recover_message.py $_msg_text $_sig_text) ]]; then
-    echo ">> recovered address: ${_eth_address}"
-fi
+    local json_fmt='{"message":%s,"signature":"%s"}'
+    local json_msg_fmt='{"timestamp":%s,"signer":"%s","domain":"%s"}'
+    local msg_text=$(printf $json_msg_fmt $(date +%s) "${eth_address}" localhost:5000 | jq -c .)
+    local sig_text=$(python3 sign_message.py "${msg_text}" "0x${private_key}")
+    local json=$(printf $json_fmt $msg_text $sig_text | jq -c .)
 
-readonly _data=$(curl -s -XPOST "${_api_base_url}/auth/token" -H "Content-Type: application/json" -d $_json)
-if [ $? -ne 0 ]; then
-    echo "error!"
-fi
-echo ">> data: "
-echo $_data | jq .
+    echo ">> json body:"
+    echo $json | jq .
+    if [[ $eth_address == $(python3 recover_message.py $msg_text $sig_text) ]]; then
+        echo ">> recovered address: ${eth_address}"
+    fi
 
-readonly _token=$(echo -n $_data | jq -r .token)
+    local data=$(curl -s -XPOST "${_api_base_url}/auth/token" -H "Content-Type: application/json" -d $json)
+    if [ $? -ne 0 ]; then
+        echo "error!"
+    fi
+    echo ">> data: "
+    echo $data | jq .
 
-readonly _payload=$(curl -s -XGET "${_api_base_url}/auth/token/payload" -H "X-Token: ${_token}")
-if [ $? -ne 0 ]; then
-    echo "error!"
-fi
-echo ">> payload:"
-echo $_payload | jq .
+    local token=$(echo -n $data | jq -r .token)
+
+    local payload=$(curl -s -XGET "${_api_base_url}/auth/token/payload" -H "X-Token: ${token}")
+    if [ $? -ne 0 ]; then
+        echo "error!"
+    fi
+    echo ">> payload:"
+    echo $payload | jq .
+
+    local json_fmt_inter='{"message":%s,"signature":"%s"}'
+    local json_msg_fmt_inter='{"interaction_id":"%s","signer":"%s"}'
+    local digest_inter=$(echo -n "abc" | openssl dgst -sha3-256 -hex | tail -c +18)
+    local msg_text_inter=$(printf $json_msg_fmt_inter "0x${digest_inter}" $eth_address)
+    local sig_text_inter=$(python3 sign_message.py $msg_text_inter "0x${private_key}")
+    local json_inter=$(printf $json_fmt_inter $msg_text_inter $sig_text_inter)
+
+    echo $digest_inter
+    echo $msg_text_inter
+    echo $json_inter
+
+    local data_inter=$(curl -s -XPOST "${_api_base_url}/interaction/approve" -H "Content-Type: application/json" -d $json_inter)
+    echo $data_inter
+}
+
+set -e
+
+main $@
+
+exit $?

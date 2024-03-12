@@ -1,15 +1,17 @@
 import json
 from flask import (
     Blueprint,
-    request, jsonify, current_app
+    request, jsonify, current_app, g
 )
 from datetime import datetime
 
 import jwt
 from web3 import Web3, EthereumTesterProvider
 from eth_account.messages import encode_defunct
+from psycopg2.extensions import connection as pg_conn
+from app.db import get_db
 
-bp = Blueprint('authentication', __name__, url_prefix='/api/v1/auth')
+bp = Blueprint('v1', __name__, url_prefix='/api/v1')
 
 _TIMESTAMP_CHECK_LATENCY = 60
 _w3 = Web3(EthereumTesterProvider())
@@ -20,16 +22,16 @@ def _check_autid_token(address: str):
     return True
 
 
-@bp.post('/token')
+@bp.post('/auth/token')
 def process_token_issue_request():
     if not request.headers.get('Content-Type', 'application/json'):
         return jsonify(error="content-type header should be set to 'application/json'"), 400
     if not request.is_json:
          return jsonify(error="failed to parse json request body"), 400
 
-    data = request.get_json()
+    # data = request.get_json()
 
-    if not {'message', 'signature'}.issubset(data):
+    if not {'message', 'signature'}.issubset(request.json):
         return jsonify(error="request missing a required field"), 400
     message: dict = request.json['message']
     signature: str = str(request.json['signature'])
@@ -73,7 +75,7 @@ def process_token_issue_request():
     return jsonify(token=token), 200
 
 
-@bp.get('/token/payload')
+@bp.get('/auth/token/payload')
 def process_token_check_request():
     token = request.headers.get('X-Token')
     if token is None:
@@ -90,3 +92,42 @@ def process_token_check_request():
         return jsonify(error=f"token validation failed with {repr(e)}"), 403
 
     return jsonify(payload=payload), 200
+
+
+@bp.post('/interaction/approve')
+def process_interaction_approve_request():
+    if not request.headers.get('Content-Type', 'application/json'):
+        return jsonify(error="content-type header should be set to 'application/json'"), 400
+    if not request.is_json:
+         return jsonify(error="failed to parse json request body"), 400
+
+    if not {'message', 'signature'}.issubset(request.json):
+        return jsonify(error="request missing a required field"), 400
+    message = request.json['message']
+    signature = request.json['signature']
+
+    if not {'interaction_id', 'signer'}.issubset(message):
+        return jsonify(error="message missing a required field" + ",".join(list(message.keys()))), 400
+    interaction_id = message.get('interaction_id', '0x') # hex
+    signer = message.get('signer', '0x')
+
+    signer_recovered = _w3.eth.account.recover_message(
+        encode_defunct(text=json.dumps(message, separators=(',', ':'))),
+        signature=Web3.to_bytes(hexstr=signature)
+    )
+    if signer != signer_recovered:
+        return jsonify(error="signer address missmatch"), 403
+    
+    sql = f'''insert into public.interaction_approve(interaction_hash, eth_address, message_, signature_hex) 
+values('{interaction_id}', '{signer}', '{Web3.to_hex(text=json.dumps(message, separators=(",", ":")))}', '{signature}');'''
+
+    connection: pg_conn = get_db()
+    connection.autocommit = True
+    with connection:
+        with connection.cursor() as cur:
+            try:
+                cur.execute(sql)
+            except:
+                return jsonify(error="invalid approve data"), 400
+    
+    return jsonify(success=True), 200
