@@ -4,7 +4,6 @@ WORKDIR /usr/src/
 
 RUN useradd -m -r user && chown user .
 
-ENV TZ="Europe/Sofia"
 
 RUN export readonly TINI_VERSION="v0.19.0"
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-arm64 /tini
