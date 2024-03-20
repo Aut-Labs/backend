@@ -1,9 +1,12 @@
 from flask import Flask
 
+from flask_cors import CORS 
+
 from app.config import PgConfig
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
 
     from app.routes import bp as blueprint
     app.register_blueprint(blueprint)
