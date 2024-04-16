@@ -4,13 +4,16 @@ from moralis import evm_api
 import typing as t
 from psycopg2.extensions import connection as pg_conn
 
+
 chainid_track_list = list(map(int, os.getenv("CHAINID_TRACK_LIST", "1,80001").split(",")))
 api_key = os.getenv("API_KEY")
+
 
 moralis_chain_by_chainid = {
     1: "eth",
     80001: "polygon"
 }
+
 
 select_interaction_by_hash_sql: str = """
 select interaction_hash, chain_id, selector, tx_to 
@@ -18,12 +21,14 @@ from public.interaction
     where 
         interaction_hash = '%x';"""
 
+
 select_max_block_id_for_holder_for_interaction_sql: str = """
 select max(block_id)
 from public.moralis_scan_checkpoints 
     where 
         interaction_hash = '%x' and 
         eth_address = '%x';"""
+
 
 # <Moralis Native Tx>
 # "hash": "0x057Ec652A4F150f7FF94f089A38008f49a0DF88e",
@@ -59,6 +64,7 @@ from public.moralis_scan_checkpoints
 #     "output": "0x"
 # }
 
+
 @dataclasses.dataclass
 class MoralisNativeTransaction:
     block_timestamp: str
@@ -71,12 +77,14 @@ class MoralisNativeTransaction:
     receipt_status: int
     tx_hash: str
 
+
 @dataclasses.dataclass
 class Interaction:
     interaction_hash: str
     chain_id: int
     selector: int
     tx_to: str
+
 
 
 def fetch_batch(tx_from: str, chain_id: int, block_from: int, step: int = 1) -> list[MoralisNativeTransaction]:
@@ -92,6 +100,7 @@ def fetch_batch(tx_from: str, chain_id: int, block_from: int, step: int = 1) -> 
         params=params,
     )
     return list(map(lambda x: MoralisNativeTransaction(**x), result))
+
 
 def process_batch(
         interaction: Interaction,
