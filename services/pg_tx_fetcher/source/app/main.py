@@ -2,11 +2,22 @@ import os
 import dataclasses
 from moralis import evm_api
 import typing as t
+import psycopg2 as pg
 from psycopg2.extensions import connection as pg_conn
+
+from .config import PgConfig
 
 
 chainid_track_list = list(map(int, os.getenv("CHAINID_TRACK_LIST", "1,80001").split(",")))
 api_key = os.getenv("API_KEY")
+
+
+def get_connection() -> pg_conn:
+    conn = pg.connect(host=PgConfig.POSTGRES_HOST,
+                    databaset=PgConfig.POSTGRES_DB,
+                    user=PgConfig.POSTGRES_USER)
+    conn.autocommit = True
+    return conn
 
 
 moralis_chain_by_chainid = {
@@ -87,7 +98,7 @@ class Interaction:
 
 
 
-def fetch_batch(tx_from: str, chain_id: int, block_from: int, step: int = 1) -> list[MoralisNativeTransaction]:
+def _fetch_batch(tx_from: str, chain_id: int, block_from: int, step: int = 1) -> list[MoralisNativeTransaction]:
     params = {
         "chain": moralis_chain_by_chainid[chain_id],
         "order": "ASC",
@@ -102,7 +113,7 @@ def fetch_batch(tx_from: str, chain_id: int, block_from: int, step: int = 1) -> 
     return list(map(lambda x: MoralisNativeTransaction(**x), result))
 
 
-def process_batch(
+def _process_batch(
         interaction: Interaction,
         # txns: the same chain id
         txns: t.Iterable[MoralisNativeTransaction]
@@ -114,3 +125,4 @@ def process_batch(
                     hex(tx.input[:10]) == interaction.selector)
         return _filter
     yield from filter(_process_one(interaction), txns)
+
