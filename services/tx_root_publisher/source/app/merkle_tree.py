@@ -54,12 +54,10 @@ def build(node_class: NodeMeta, values_: list[str]) -> t.Optional[NodeMeta]:
             node.l_node = _build_tree(values[0:split])
             node.r_node = _build_tree(values[split:len(values)])
             node.value = node.l_node.value + node_class.delim + node.r_node.value
-            print(node)
             return node
         elif len(values) == 1:
             node = node_class()
             node.value = values[0]
-            print(node, "<leaf>")
             return node
         else:
             return None

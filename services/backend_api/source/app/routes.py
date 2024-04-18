@@ -132,3 +132,8 @@ signature_hex = EXCLUDED.signature_hex;'''
                 return jsonify(error="invalid approve data"), 400
     
     return jsonify(success=True), 200
+
+
+@bp.get('/interaction/map')
+def get_interaction_map():
+    ...
