@@ -2,9 +2,10 @@ import os
 
 
 class ContractsRelayerConfig:
+    RPC_URL: str = os.getenv("RPC_URL")
     INTERACTION_DATASET_ADDR = os.getenv("INTERACION_DATASET_ADDR")
     RELAYER_PK: str = os.getenv("RELAYER_PK")
-    DATASET_ABI: dict = {
+    INTERACTION_DATASET_ABI: dict = {
         "abi": [{
             "type": "function",
             "name": "updateRoot",

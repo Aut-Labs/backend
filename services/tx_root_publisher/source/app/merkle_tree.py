@@ -1,15 +1,11 @@
 import abc
 import typing as t
 
+
 class NodeMeta(metaclass=abc.ABCMeta):
     @staticmethod
     @abc.abstractmethod
     def hash_func(_: str) -> bytes:
-        ...
-    
-    @staticmethod
-    @abc.abstractmethod
-    def is_valid(_: str) -> bool:
         ...
 
     @staticmethod
@@ -36,8 +32,6 @@ class NodeMeta(metaclass=abc.ABCMeta):
 
     @value.setter
     def value(self, x: str):
-        if not self.__class__.is_valid(x):
-            raise ValueError()
         self.orig_value = x
         self.hash_value = self.__class__.hash_func(self.orig_value)
 
@@ -69,7 +63,6 @@ def test_node_meta():
     import hashlib
     class TestNode(NodeMeta):
         hash_func: t.Callable[[str], bytes] = lambda _: hashlib.sha256(_.encode()).digest()
-        is_valid: t.Callable[[str], bool] = lambda _: True
         delim: str = ":"
 
     test_values: list[str] = ["a", "b", "c", "d", "e", "f", "g"]
