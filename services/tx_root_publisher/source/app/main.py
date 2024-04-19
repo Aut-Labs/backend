@@ -2,15 +2,14 @@ import json
 import typing as t
 import dataclasses
 
-import web3
 from web3 import Web3, HTTPProvider
 import psycopg2 as pg
 from psycopg2.extensions import connection as pg_conn
 from eth_hash.auto import keccak as keccak256
 
 from app.config import PgConfig, ContractsRelayerConfig
-from app.merkle_tree import NodeMeta as MerkleTreeNodeMeta
-from app.merkle_tree import build as build_merkle_tree
+from app.utils import NodeMeta as MerkleTreeNodeMeta
+from app.utils import build as build_merkle_tree
 
 
 _read_interactions_sql = '''SELECT interaction_hash, chain_id, selector, tx_to 

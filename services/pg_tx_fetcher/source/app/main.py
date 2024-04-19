@@ -12,6 +12,7 @@ chainid_track_list = list(map(int, os.getenv("CHAINID_TRACK_LIST", "1,80001").sp
 api_key = os.getenv("API_KEY")
 
 
+# todo: move to common/misc/utils
 def get_connection() -> pg_conn:
     conn = pg.connect(host=PgConfig.POSTGRES_HOST,
                     databaset=PgConfig.POSTGRES_DB,

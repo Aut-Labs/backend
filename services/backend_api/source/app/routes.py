@@ -122,6 +122,7 @@ on conflict do update set
 message_ = EXCLUDED.message_,
 signature_hex = EXCLUDED.signature_hex;'''
 
+    # todo: move to common/misc/utils
     connection: pg_conn = get_db()
     connection.autocommit = True
     with connection:
@@ -132,6 +133,24 @@ signature_hex = EXCLUDED.signature_hex;'''
                 return jsonify(error="invalid approve data"), 400
     
     return jsonify(success=True), 200
+
+
+@bp.get('/interactions/approve')
+def get_approved_interactions():
+    _sql = '''select from public.interaction_approve(interaction_hash);'''
+
+    data = list()
+    connection: pg_conn = get_db()
+    connection.autocommit = True
+    with connection:
+        with connection.cursor() as cur:
+            try:
+                cur.execute(_sql)
+                data = list(cur)
+            except:
+                return jsonify(error="invalid data"), 400
+
+    return jsonify(data=data, success=True), 200
 
 
 @bp.get('/interaction/map')
