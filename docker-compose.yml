@@ -18,3 +18,10 @@ services:
     command: ["python", "-m", "app"]
     networks:
       - backend
+  tx_root_publisher:
+    build:
+      context: services/tx_root_publisher
+      dockerfile: ./../../docker/tx_root_publisher/Dockerfile
+    env_file:
+      - ./docker/postgres/dev.env
+      - ./docker/pg_root_publiser
