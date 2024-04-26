@@ -40,7 +40,6 @@ class NodeMeta(metaclass=abc.ABCMeta):
 
 
 def build(node_class: NodeMeta, values_: list[str]) -> t.Optional[NodeMeta]:
-
     def _build_tree(values: list[str]) -> t.Optional[NodeMeta]:
         if len(values) > 1:
             split: int = len(values) // 2
@@ -55,7 +54,6 @@ def build(node_class: NodeMeta, values_: list[str]) -> t.Optional[NodeMeta]:
             return node
         else:
             return None
-
     return _build_tree(values_)
 
 
@@ -70,6 +68,11 @@ def test_node_meta():
 
     assert root_node.hash_value.hex() == 'c4a27b10cbb215a99a7696a5a2c4df82350f20223c7c7678a87dbf7c9e7eabf1'
     assert root_node.orig_value == 'a:b:c:d:e:f:g'
+
+    test_values_2: list[str] = []
+    root_node_2: TestNode = build(TestNode, test_values_2)
+
+    assert root_node_2.orig_value is None
 
 
 __all__ = (NodeMeta, build)

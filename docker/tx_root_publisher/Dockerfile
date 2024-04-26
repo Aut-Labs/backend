@@ -17,13 +17,16 @@ RUN pip install -U \
 
 RUN pip install --disable-pip-version-check -r requirements.txt
 
-COPY source/app /usr/src/app
+COPY src/app /usr/src/app
 
 ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app:/usr/src"
 
 USER user
 
-RUN cat > /etc/crond.d/job
+RUN cat > /etc/crond.d/job <<EOL
+* * * * * python3 -m app
+# 
+EOL
 
 RUN chomod 0644 /etc/cron.d/job
 

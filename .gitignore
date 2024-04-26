@@ -48,3 +48,6 @@ volumes/servers.json
 volumes/pgadmin
 
 services/backend_api/tini-amd64
+
+!services/tx_root_publisher/src/app/lib
+!services/pg_tx_fetcher/src/app/lib

@@ -1,9 +1,9 @@
 import os
 
 
-class ContractsRelayerConfig:
+class ContractsRelayer:
     RPC_URL: str = os.getenv("RPC_URL")
-    INTERACTION_DATASET_ADDR = os.getenv("INTERACION_DATASET_ADDR")
+    INTERACTION_DATASET_ADDR: str = os.getenv("INTERACION_DATASET_ADDR")
     RELAYER_PK: str = os.getenv("RELAYER_PK")
     INTERACTION_DATASET_ABI: dict = {
         "abi": [{
@@ -25,10 +25,3 @@ class ContractsRelayerConfig:
             "stateMutability": "nonpayable"
         }]
     }
-
-
-class PgConfig:
-    # POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-    POSTGRES_DB = os.getenv("POSTGRES_DB")
-    POSTGRES_USER = os.getenv("POSTGRES_USER")
-    POSTGRES_HOST = "postgres"

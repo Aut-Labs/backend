@@ -2,41 +2,8 @@ import typing as t
 import dataclasses
 
 from moralis import evm_api
-import psycopg2 as pg
-from psycopg2.extensions import connection as pg_conn
 
-from app.config import PgConfig, PgTxFetcherConfig
-
-
-# todo: move to common/misc/utils
-# pylint: disable=duplicate-code
-def get_connection() -> pg_conn:
-    conn = pg.connect(host=PgConfig.POSTGRES_HOST,
-                      databaset=PgConfig.POSTGRES_DB,
-                      user=PgConfig.POSTGRES_USER)
-    conn.autocommit = True
-    return conn
-
-
-moralis_chain_by_chainid = {
-    1: "eth",
-    80001: "polygon"
-}
-
-
-select_interaction_by_hash_sql: str = """
-select interaction_hash, chain_id, selector, tx_to 
-from public.interaction 
-    where 
-        interaction_hash = '%x';"""
-
-
-select_max_block_id_for_holder_for_interaction_sql: str = """
-select max(block_id)
-from public.moralis_scan_checkpoints 
-    where 
-        interaction_hash = '%x' and 
-        eth_address = '%x';"""
+from app.cfg import PgTxFetcherConfig
 
 
 @dataclasses.dataclass
@@ -52,13 +19,17 @@ class MoralisNativeTransaction:
     tx_hash: str
 
 
-
 @dataclasses.dataclass
 class InteractionDefinition:
     chain_id: int
     selector: str
     tx_to: str
 
+
+moralis_chain_by_chainid = {
+    1: "eth",
+    80001: "polygon"
+}
 
 
 def fetch_batch(tx_from: str, chain_id: int, block_from: int, step: int = 1) -> list[MoralisNativeTransaction]:
@@ -110,13 +81,3 @@ def test_process_batch():
     interaction = InteractionDefinition(chain_id=1, selector="0xa9059cbb", tx_to="0xdac17f958d2ee523a2206206994597c13d831ec7")
     processed = list(process_batch(interaction, batch))
     print(processed)
-
-
-__all__ = (
-    process_batch,
-    fetch_batch,
-    select_interaction_by_hash_sql,
-    select_max_block_id_for_holder_for_interaction_sql,
-    MoralisNativeTransaction,
-    InteractionDefinition
-)

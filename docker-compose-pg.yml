@@ -33,21 +33,5 @@ services:
     networks:
       - backend
 
-  pgadmin:
-    image: dpage/pgadmin4:4.23
-    container_name: pgadmin
-    env_file:
-      - "./docker/postgres/dev.env"
-      - "./docker/pgadmin/dev.env"
-    ports:
-      - '15432:80'
-    volumes:
-      - ./volumes/pgadmin:/var/lib/pgadmin
-      - ./volumes/servers.json:/pgadmin4/servers.json
-    depends_on:
-      - postgres
-    networks:
-      - backend
-
 # todo: pgpool for dc-prod.yml
 # todo: bitnami images
