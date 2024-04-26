@@ -47,7 +47,8 @@ volumes/postgres
 volumes/servers.json
 volumes/pgadmin
 
-services/backend_api/tini-amd64
+# install compatible version (tini-amd64/tini-arm64/..)
+services/backend_api/tini
 
 !services/tx_root_publisher/src/app/lib
 !services/pg_tx_fetcher/src/app/lib

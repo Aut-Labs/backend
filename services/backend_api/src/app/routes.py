@@ -9,7 +9,7 @@ import jwt
 from web3 import Web3, EthereumTesterProvider
 from eth_account.messages import encode_defunct
 from psycopg2.extensions import connection as pg_conn
-from app.db import get_db
+from app.database import get_db
 
 bp = Blueprint('v1', __name__, url_prefix='/api/v1')
 
@@ -116,11 +116,8 @@ def process_interaction_approve_request():
     if signer != signer_recovered:
         return jsonify(error="signer address missmatch"), 403
     
-    sql = f'''insert into public.interaction_approve(interaction_hash, eth_address, message_, signature_hex) 
-values('{interaction_id}', '{signer}', '{Web3.to_hex(text=json.dumps(message, separators=(",", ":")))}', '{signature}')
-on conflict do update set
-message_ = EXCLUDED.message_,
-signature_hex = EXCLUDED.signature_hex;'''
+    sql = f'''insert into public.interaction_approve (interaction_hash, eth_address, message_, signature_hex) 
+values('{interaction_id}', '{signer}', '{Web3.to_hex(text=json.dumps(message, separators=(",", ":")))}', '{signature}');'''
 
     # todo: move to common/misc/utils
     connection: pg_conn = get_db()
@@ -135,9 +132,25 @@ signature_hex = EXCLUDED.signature_hex;'''
     return jsonify(success=True), 200
 
 
-@bp.get('/interactions/approve')
+@bp.get('/interaction/approve')
 def get_approved_interactions():
-    _sql = '''select from public.interaction_approve(interaction_hash);'''
+    token = request.headers.get('X-Token')
+    if token is None:
+        return jsonify(error="x-token header should be set"), 400
+
+    sender: str = None
+    try:
+        payload = jwt.decode(
+            token, 
+            current_app.config["SECRET_KEY"],
+            algorithms=['ES256K'],
+            audience='urn:autlabs:autid:holder'
+        )
+        sender = payload['sub']
+    except jwt.PyJWTError as e:
+        return jsonify(error=f"token validation failed with {repr(e)}"), 403
+
+    _sql = f'''select * from public.interaction_approve where eth_address = '{sender}';'''
 
     data = list()
     connection: pg_conn = get_db()

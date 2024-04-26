@@ -7,9 +7,11 @@ class BackendApiConfig:
     AUTH_BEGIN_TIMESTAMP = int(os.getenv("AUTH_BEGIN_TIMESTAMP"))
 
 
-# pylint: disable=duplicate-code
-class PgConfig:
+class PostgresClientConfig:
     # POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
     POSTGRES_DB = os.getenv("POSTGRES_DB")
     POSTGRES_USER = os.getenv("POSTGRES_USER")
     POSTGRES_HOST = "postgres"
+
+
+__all__ = BackendApiConfig, PostgresClientConfig,

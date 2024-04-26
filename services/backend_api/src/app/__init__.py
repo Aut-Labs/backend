@@ -1,6 +1,7 @@
 from flask import Flask
 
-from app.config import PgConfig
+from app.config import PostgresClientConfig
+
 
 def create_app():
     app = Flask(__name__)
@@ -8,15 +9,19 @@ def create_app():
     from app.routes import bp as blueprint
     app.register_blueprint(blueprint)
 
-    from app.config import Config
+    from app.config import BackendApiConfig
     app.config.from_mapping({
-        "SECRET_KEY": Config.SECRET_KEY,
-        "AUTH_TOKEN_DURATION": Config.AUTH_TOKEN_DURATION,
-        "AUTH_BEGIN_TIMESTAMP": Config.AUTH_BEGIN_TIMESTAMP
+        "SECRET_KEY": BackendApiConfig.SECRET_KEY,
+        "AUTH_TOKEN_DURATION": BackendApiConfig.AUTH_TOKEN_DURATION,
+        "AUTH_BEGIN_TIMESTAMP": BackendApiConfig.AUTH_BEGIN_TIMESTAMP
     })
 
-    app.config.from_object(PgConfig())
+    app.config.from_object(PostgresClientConfig())
 
     return app
 
+
 app = create_app()
+
+
+__all__ = app,

@@ -66,3 +66,13 @@ create index interaction_tx_block_id
     on public.interaction_tx 
     using btree (block_id)
 ;
+
+-- ** test data **
+
+insert into public.interaction (interaction_hash, chain_id, selector, tx_to)
+    values (
+        '0x3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532',
+        12345,
+        'abcdef',
+        '0x447E286EEdfeAA6DD043Afe0B9274A1F9223669A'
+    );

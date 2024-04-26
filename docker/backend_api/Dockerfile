@@ -5,8 +5,10 @@ WORKDIR /usr/src/
 RUN useradd -m -r user && chown user .
 
 RUN export readonly TINI_VERSION="v0.19.0"
+# --> https://github.com/krallin/tini/releases/tag/v0.19.0
+
 ARG TINI_VERSION="$(echo \$TINI_VERSION)"
-COPY ./tini-amd64 ./tini
+COPY ./tini ./tini
 RUN chmod +x ./tini
 
 RUN apt-get update && \
@@ -21,7 +23,7 @@ RUN pip install -U \
 
 RUN pip install --disable-pip-version-check -r requirements.txt
 
-COPY source/app /usr/src/app
+COPY src/app /usr/src/app
 
 ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app:/usr/src"
 

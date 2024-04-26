@@ -14,16 +14,16 @@ services:
       - ./docker/backend_api/dev.env
       - ./docker/postgres/dev.env
     ports:
-      - "5000:5000"
+      - "5050:5050"
     command: ["python", "-m", "app"]
     networks:
       - backend
-  tx_root_publisher:
-    build:
-      context: services/tx_root_publisher
-      dockerfile: ./../../docker/tx_root_publisher/Dockerfile
-    env_file:
-      - ./docker/postgres/dev.env
-      - ./docker/pg_root_publiser
-    networks:
-      - backend
+  # tx_root_publisher:
+  #   build:
+  #     context: services/tx_root_publisher
+  #     dockerfile: ./../../docker/tx_root_publisher/Dockerfile
+  #   env_file:
+  #     - ./docker/postgres/dev.env
+  #     - ./docker/pg_root_publiser
+  #   networks:
+  #     - backend

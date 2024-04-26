@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-readonly _port=5000
+readonly _port=5050
 readonly _host="localhost"
 readonly _version="v1"
 readonly _api_base_url="http://${_host}:${_port}/api/${_version}"
@@ -22,7 +22,7 @@ function main {
 
     local json_fmt='{"message":%s,"signature":"%s"}'
     local json_msg_fmt='{"timestamp":%s,"signer":"%s","domain":"%s"}'
-    local msg_text=$(printf $json_msg_fmt $(date +%s) "${eth_address}" localhost:5000 | jq -c .)
+    local msg_text=$(printf $json_msg_fmt $(date +%s) "${eth_address}" $_host:$_port | jq -c .)
     local sig_text=$(python3 sign_message.py "${msg_text}" "0x${private_key}")
     local json=$(printf $json_fmt $msg_text $sig_text | jq -c .)
 
@@ -55,16 +55,18 @@ function main {
     local sig_text_inter=$(python3 sign_message.py $msg_text_inter "0x${private_key}")
     local json_inter=$(printf $json_fmt_inter $msg_text_inter $sig_text_inter)
 
-    echo $digest_inter
-    echo $msg_text_inter
-    echo $json_inter
+    # echo $digest_inter
+    # echo $msg_text_inter
+    # echo $json_inter
 
     local data_inter=$(curl -s -XPOST "${_api_base_url}/interaction/approve" -H "Content-Type: application/json" -d $json_inter)
-    echo $data_inter
+    echo ">> approve result:"
+    echo $data_inter | jq .
+
+    local approves=$(curl -s -XGET "${_api_base_url}/interaction/approve" -H "Content-Type: application/json" -H "X-Token: ${token}")
+    echo ">> approves:"
+    echo $approves | jq .
 }
 
-set -e
-
 main $@
-
 exit $?
