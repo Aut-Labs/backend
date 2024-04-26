@@ -25,7 +25,7 @@ class _EnforceTypeAnnotationsRuntime:
 
 def _get_connection() -> pg_conn:
     conn = pg.connect(host=PostgresClientConfig.POSTGRES_HOST,
-                      databaset=PostgresClientConfig.POSTGRES_DB,
+                      database=PostgresClientConfig.POSTGRES_DB,
                       user=PostgresClientConfig.POSTGRES_USER)
     conn.autocommit = True
     return conn

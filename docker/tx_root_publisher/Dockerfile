@@ -5,7 +5,7 @@ WORKDIR /usr/src/
 RUN useradd -m -r user && chown user .
 
 RUN apt-get update && \
-    apt-get install cron && \
+    apt-get install -y cron && \
     apt-get install -y --no-install-recommends gcc
 
 COPY requirements.txt .
@@ -21,14 +21,15 @@ COPY src/app /usr/src/app
 
 ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app:/usr/src"
 
-USER user
 
-RUN cat > /etc/crond.d/job <<EOL
+# https://crontab.guru/
+RUN cat > /etc/cron.d/job <<EOL
 * * * * * python3 -m app
 # 
 EOL
 
-RUN chomod 0644 /etc/cron.d/job
+# check syntax
+RUN crontab -n /etc/cron.d/job
 
 RUN crontab /etc/cron.d/job
 
