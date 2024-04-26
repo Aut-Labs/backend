@@ -25,3 +25,5 @@ services:
     env_file:
       - ./docker/postgres/dev.env
       - ./docker/pg_root_publiser
+    networks:
+      - backend
