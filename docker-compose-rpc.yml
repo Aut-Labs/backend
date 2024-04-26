@@ -1,0 +1,15 @@
+version: '3.8'
+
+networks:
+  backend:
+    name: backend
+    external: true
+
+services:
+  blockchain_rpc:
+    image: ghcr.io/foundry-rs/foundry
+    command: ["anvil", "--host", "0.0.0.0"]
+    ports:
+      - "8545:8545"
+    networks:
+      - backend
