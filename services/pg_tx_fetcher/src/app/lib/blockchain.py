@@ -3,7 +3,7 @@ import dataclasses
 
 from moralis import evm_api
 
-from app.cfg import PgTxFetcherConfig
+# from app.cfg import PgTxFetcherConfig
 
 
 @dataclasses.dataclass
@@ -14,6 +14,7 @@ class MoralisNativeTransaction:
     input: str
     from_address: str
     to_address: str
+    
     value: int
     receipt_status: int
     tx_hash: str
@@ -41,7 +42,8 @@ def fetch_batch(tx_from: str, chain_id: int, block_from: int, step: int = 1) -> 
         "to_block": block_from + step
     }
     result = evm_api.transaction.get_wallet_transactions(
-        api_key=PgTxFetcherConfig.MORALIS_API_KEY,
+        api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImE1ZTgzNGFhLWM1NGUtNDQ2Zi04Y2U1LTM0NDFkNGQ4YjAyMCIsIm9yZ0lkIjoiMzg4Mzg1IiwidXNlcklkIjoiMzk5MDg5IiwidHlwZUlkIjoiYzA1NDY3NjEtYTVkZi00OGUyLWE4OWUtMWNjM2Q0NjA2MTFhIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MTMzNzE2MDUsImV4cCI6NDg2OTEzMTYwNX0.W9-i2c5ai8ukWMRtM9XHmK9Pbvd83kjB1bWokFvdZHw",
+        # api_key=PgTxFetcherConfig.MORALIS_API_KEY,
         params=params,
     )['result']
     return list(map(lambda x: MoralisNativeTransaction(**{
