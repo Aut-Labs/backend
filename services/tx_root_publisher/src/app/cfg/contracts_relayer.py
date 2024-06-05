@@ -25,3 +25,32 @@ class ContractsRelayer:
             "stateMutability": "nonpayable"
         }]
     }
+    INTERACTION_REGISTRY_ABI: dict = {
+        "type": "function",
+        "name": "predictInteractionId",
+        "inputs": [
+            {
+                "name": "chainId",
+                "type": "uint16",
+                "internalType": "uint16"
+            },
+            {
+                "name": "recipient",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "functionSelector",
+                "type": "bytes4",
+                "internalType": "bytes4"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "stateMutability": "pure"
+    }

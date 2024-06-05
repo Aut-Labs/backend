@@ -38,6 +38,17 @@ class Interaction(_EnforceTypeAnnotationsRuntime):
     selector: int
     tx_to: str
 
+@dataclasses.dataclass
+class InteractionData(_EnforceTypeAnnotationsRuntime):
+    chain_id: int
+    selector: int
+    tx_to: str
+
+
+@dataclasses.dataclass
+class Interaction(InteractionData):
+    interaction_hash: str
+
 
 def get_interactions() -> t.Iterator[dict]:
     with _get_connection() as conn:
@@ -50,4 +61,4 @@ def get_interactions() -> t.Iterator[dict]:
                                   tx_to=row[3])
 
 
-__all__ = (get_interactions, Interaction)
+__all__ = (get_interactions, Interaction, InteractionData)
