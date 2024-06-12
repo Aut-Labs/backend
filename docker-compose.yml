@@ -27,3 +27,14 @@ services:
       - ./docker/tx_root_publisher/dev.env
     networks:
       - backend
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - backend
+    depends_on:
+      - backend_api
