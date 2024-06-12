@@ -15,7 +15,7 @@ services:
       - ./docker/postgres/dev.env
     ports:
       - "5050:5050"
-    command: ["python", "-m", "app"]
+    command: ["gunicorn", "--bind", "0.0.0.0:5050", "app:app"]
     networks:
       - backend
   tx_root_publisher:

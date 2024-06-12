@@ -37,7 +37,7 @@ def push_new_merkle_root():
     next_root_hash: bytes = _calc_new_merkle_root()
     next_proof_hash: bytes = ...
     InteractionDataset = _w3.eth.contract(address=ContractsRelayerConfig.INTERACTION_DATASET_ADDR,
-                                         abi=ContractsRelayerConfig.INTERACTION_DATASET_ABI["abi"])
+                                          abi=ContractsRelayerConfig.INTERACTION_DATASET_ABI["abi"])
     unsigned_tx = InteractionDataset.functions.updateRoot(next_root_hash,
                                                           next_proof_hash)
     _w3.eth.account.sign_transaction(unsigned_tx, private_key=ContractsRelayerConfig.RELAYER_PK)

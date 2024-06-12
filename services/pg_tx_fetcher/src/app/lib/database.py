@@ -12,9 +12,6 @@ def _get_connection() -> pg_conn:
     return conn
 
 
-
-
-
 _select_interaction_by_hash_sql: str = """
 select interaction_hash, chain_id, selector, tx_to 
 from public.interaction 
