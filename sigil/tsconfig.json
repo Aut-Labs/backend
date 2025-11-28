@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "types": ["node"],
+    "declaration": true,
+    "lib": [
+      "es2015"
+    ],
+    "module": "commonjs",
+    "strictNullChecks": false,
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "declarationDir": "dist",
+    "outDir": "./dist",
+    "rootDir": "src",
+    "strict": false,
+    "noImplicitUseStrict": false,
+    "preserveConstEnums": false,
+    "sourceMap": true,
+    "target": "es2016",
+    "esModuleInterop": true,
+    "isolatedModules": false,
+    "skipLibCheck": true
+    
+  },
+  "transpileOnly": true,
+  "include": ["src"],
+  "exclude": ["src/AutSIgilGenerator/ImageLoader.ts"]
+}
